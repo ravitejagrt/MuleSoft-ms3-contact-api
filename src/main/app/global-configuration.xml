@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+    <db:generic-config name="Generic_Database_Configuration" url="jdbc:mysql://root:admin@127.0.0.1:3306/db" driverClassName="com.mysql.cj.jdbc.Driver" doc:name="Generic Database Configuration"/>
+ <!--   <spring:beans>
+        <spring:bean id="Bean" name="Bean" class="com.mysql.jdbc.Driver" autowire-candidate="default"/>
+    </spring:beans>
+     <db:generic-config name="Generic_Database_Configuration1" dataSource-ref="Bean" doc:name="Generic Database Configuration"/> -->
+<!-- 
+	<spring:beans>
+     <spring:bean id="clear_DataSource" name="clear_DataSource" class="org.enhydra.jdbc.standard.StandardDataSource">
+            <spring:property name="url" value="${clear.db.api.url}"/>
+            <spring:property name="driverName" value="${clear.db.api.driver}"/>
+        </spring:bean>
+         
+    <spring:bean id="clearStagingHikariConfig" class="com.zaxxer.hikari.HikariConfig">
+		<spring:property name="driverClassName"  value="${clear.staging.db.driver}"/>
+		<spring:property name="jdbcUrl"  value="${clear.staging.db.url}"/>
+		<spring:property name="connectionTimeout" value="${clear.staging.db.connection.timeout.milli}"/>
+		<spring:property name="idleTimeout" value="${clear.staging.db.idle.timeout}"/>
+	    <spring:property name="maxLifetime" value="${clear.staging.db.max.life.time}"/>
+	    <spring:property name="maximumPoolSize" value="${clear.staging.db.max.pool.size}"/>
+	</spring:bean>
+	<spring:bean id="clear_staging_datasource" name="clear_staging_datasource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+                 <spring:constructor-arg ref="clearStagingHikariConfig"/>
+          </spring:bean>
+    </spring:beans>
+   
+   <apikit:config name="suez-clear-config" raml="s-suez-clear-api.raml" consoleEnabled="false" doc:name="Router" >
+   </apikit:config>
+   
+   <apikit:config name="suez-clear-console-config" raml="s-suez-clear-api.raml" consoleEnabled="true" doc:name="Router" >
+   </apikit:config>
+
+   
+   <db:generic-config name="Clear_Api_Database_Configuration" dataSource-ref="clear_DataSource" doc:name="Generic Database Configuration">
+      <reconnect frequency="${clear.db.api.reconnection.time.ms}" count="${clear.db.api.reconnection.count}"/>
+    </db:generic-config>
+   
+    <db:generic-config name="Clear_Staging_Database_Configuration" dataSource-ref="clear_staging_datasource" doc:name="Generic Database Configuration">
+<reconnect frequency="${clear.staging.db.reconnection.time.ms}" count="${clear.staging.db.reconnection.count}"/>
+  </db:generic-config> -->
+</mule>

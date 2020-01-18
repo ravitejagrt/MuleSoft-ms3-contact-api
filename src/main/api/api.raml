@@ -1,34 +1,49 @@
 #%RAML 0.8
 title: Contact API
-protocols: HTTP
+protocols: [HTTP]
 
 /identification:
+  get:
+    responses: 
+      200:
+        body: 
+          application/json: 
+  post:
+    responses: 
+      201:
   /{id}:
     get:
       responses: 
         200:
-    post:
-      responses: 
-        201:
+          body: 
+            application/json: 
     put:
     delete:
-  /address:
-    get:
-      responses: 
-        200:
-    post:
-      responses: 
-        201:
-    put:
-    delete:
-  /communication:
-    get:
-      responses: 
-        200:
-    post:
-      responses: 
-        201:
-    put:
-    delete:
+    /address:
+      get:
+        responses: 
+          200:
+            body: 
+              application/json:
+      post:
+        responses: 
+          201:
+      /{addressId}:
+        get:
+        put:
+        delete:
+    /communication:
+      get:
+        responses: 
+          200:
+            body: 
+              application/json:
+      post:
+        responses: 
+          201:
+      /{communicationId}:
+        get:
+        put:
+        delete:
   
   
