@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
 	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
 http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+    <http:listener-config name="api-httpListenerConfig" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration" />
+    <apikit:config name="api-config" raml="api.raml" consoleEnabled="false" doc:name="Router" keepRamlBaseUri="false">
+        <apikit:flow-mapping resource="/identification" action="get" flow-ref="get:/identification:api-config" />
+        <apikit:flow-mapping resource="/identification/{id}" action="get" flow-ref="get:/identification/{id}:api-config" />
+        <apikit:flow-mapping resource="/identification" action="post" flow-ref="post:/identification:api-config" />
+        <apikit:flow-mapping resource="/identification/{id}" action="put" flow-ref="put:/identification/{id}:api-config" />
+        <apikit:flow-mapping resource="/identification/{id}" action="delete" flow-ref="delete:/identification/{id}:api-config" />
+    </apikit:config>
     <db:generic-config name="Generic_Database_Configuration" url="jdbc:mysql://root:admin@127.0.0.1:3306/db" driverClassName="com.mysql.cj.jdbc.Driver" doc:name="Generic Database Configuration"/>
  <!--   <spring:beans>
         <spring:bean id="Bean" name="Bean" class="com.mysql.jdbc.Driver" autowire-candidate="default"/>

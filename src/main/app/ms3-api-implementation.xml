@@ -20,16 +20,17 @@ payload map {
 	empId: $.emp_id,
 	firstName: $.first_name,
 	lastName: $.last_name,
-	dob: $.dob as :date {format: "MM-dd-yyyy"},
+	dob: $.dob as :date {format: "yyyy-MM-dd"} default "",
 	gender: $.gender,
 	title: $.title
 }]]></dw:set-payload>
         </dw:transform-message>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+
     </flow>
     <flow name="get-identification-item-Flow">
         <db:select config-ref="Generic_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[SELECT * FROM identification WHERE id = #[flowVars.id]]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[SELECT * FROM identification WHERE emp_id = #[flowVars.id]]]></db:parameterized-query>
+
         </db:select>
         <dw:transform-message doc:name="Transform Message">
             <dw:set-payload><![CDATA[%dw 1.0
@@ -39,30 +40,32 @@ payload map {
 	empId: payload[0].emp_id,
 	firstName: payload[0].first_name,
 	lastName: payload[0].last_name,
-	dob: payload[0].dob,
+	dob: payload[0].dob as :date {format: "yyyy-MM-dd"} default "",
 	gender: payload[0].gender,
 	title: payload[0].title
 }]]></dw:set-payload>
         </dw:transform-message>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+
     </flow>
     <flow name="create-identification-Flow">
         <dw:transform-message doc:name="Transform Message">
+            <dw:input-payload doc:sample="sample_data\json_2.json"/>
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
 {
-	firstName: payload.first_name,
-	lastName: payload.last_name,
-	dob: payload.dob,
+	firstName: payload.firstName,
+	lastName: payload.lastName,
+	dob: payload.dob as :string as :date {format: "yyyy-MM-dd"},
 	gender: payload.gender,
 	title: payload.title
 }]]></dw:set-payload>
         </dw:transform-message>
         <db:insert config-ref="Generic_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[INSERT INTO indentification (first_name, last_name, dob, gender, title) VALUES (#[payload.firstName], #[payload.lastName], #[payload.dob], #[payload.gender], #[payload.title]);]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[INSERT INTO identification (first_name, last_name, dob, gender, title) VALUES (#[payload.firstName], #[payload.lastName], #[payload.dob], #[payload.gender], #[payload.title]);]]></db:parameterized-query>
+
         </db:insert>
-        <logger level="INFO" doc:name="Logger" message="#[payload]"/>
+
     </flow>
     <flow name="update-identification-Flow">
         <dw:transform-message doc:name="Transform Message">
@@ -70,28 +73,32 @@ payload map {
 %output application/java
 ---
 {
-	firstName: payload.first_name,
-	lastName: payload.last_name,
-	dob: payload.dob,
+	firstName: payload.firstName,
+	lastName: payload.lastName,
+	dob: payload.dob as :string as :date {format: "yyyy-MM-dd"},
 	gender: payload.gender,
 	title: payload.title
 }]]></dw:set-payload>
         </dw:transform-message>
+        <logger message="UPDATE identification SET first_name=#[payload.firstName], last_name=#[payload.lastName], dob=#[payload.dob], , gender=#[payload.gender], title=#[payload.title] WHERE emp_id=#[flowVars.id]" level="INFO" doc:name="Logger"/>
         <db:update config-ref="Generic_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[UPDATE indentification SET first_name=#[payload.firstName], last_name=#[payload.lastName], dob=#[payload.dob], , gender=#[payload.gender], title=#[payload.title];]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[UPDATE identification SET first_name=#[payload.firstName], last_name=#[payload.lastName], dob=#[payload.dob], gender=#[payload.gender], title=#[payload.title] WHERE emp_id=#[flowVars.id]]]></db:parameterized-query>
+
         </db:update>
-        <logger level="INFO" doc:name="Logger" message="#[payload]"/>
+
     </flow>
     <flow name="delete-identification-Flow">
         <db:delete config-ref="Generic_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[DELETE FROM identifiCATION WHERE id = #[flowVars.id]]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[DELETE FROM identification WHERE id = #[flowVars.id]]]></db:parameterized-query>
+
         </db:delete>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+
     </flow>
     <flow name="get-address-collection-Flow">
-        <set-variable variableName="empId" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="empId"/>
+
         <db:select config-ref="Generic_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[SELECT * FROM address WHERE emp_id = #[flowVars.empId]]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[SELECT * FROM address WHERE emp_id = #[flowVars.id]]]></db:parameterized-query>
+
         </db:select>
 
         <dw:transform-message doc:name="Transform Message">
@@ -101,7 +108,7 @@ payload map {
 payload map {
 	empId: $.emp_id,
 	addressId: $.add_id,
-	type: $.type,
+	type: $.address_type,
 	number: $.number,
 	street: $.street,
 	unit: $.unit,
@@ -110,10 +117,10 @@ payload map {
 	zipcode: $.zipcode
 }]]></dw:set-payload>
         </dw:transform-message>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+
     </flow>
     <flow name="create-address-Flow">
-        <set-variable variableName="empId" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="empId"/>
+
         <dw:transform-message doc:name="Transform Message">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
@@ -130,17 +137,16 @@ payload map {
 }]]></dw:set-payload>
         </dw:transform-message>
         <db:insert config-ref="Generic_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[INSERT INTO address ("emp_id", "type", "number", "street", "unit", "city", "state", "zipcode") VALUES (#[payload.empId], #[payload.type], #[payload.number], #[payload.street], #[payload.unit], #[payload.city], #[payload.state], #[payload.zipcode])]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[INSERT INTO address ("emp_id", "address_type", "number", "street", "unit", "city", "state", "zipcode") VALUES (#[payload.empId], #[payload.type], #[payload.number], #[payload.street], #[payload.unit], #[payload.city], #[payload.state], #[payload.zipcode])]]></db:parameterized-query>
         </db:insert>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+
 
     </flow>
     <flow name="get-address-item-Flow">
-        <set-variable variableName="empId" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="empId"/>
-        <set-variable variableName="addressId" value="#[message.inboundProperties.'http.uri.params'.addressId]" doc:name="addressId"/>
         <db:select config-ref="Generic_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[SELECT * FROM address WHERE emp_id = #[flowVars.empId] AND add_id = #[flowVars.addressId]]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[SELECT * FROM address WHERE emp_id = #[flowVars.id] AND add_id = #[flowVars.addressId]]]></db:parameterized-query>
         </db:select>
+
         <dw:transform-message doc:name="Transform Message">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/json skipNullOn="everywhere"
@@ -148,20 +154,19 @@ payload map {
 {
 	empId: payload[0].emp_id,
 	addressId: payload[0].add_id,
-	type: payload[0].type,
+	type: payload[0].address_type,
 	number: payload[0].number,
 	street: payload[0].street,
 	unit: payload[0].unit,
 	city: payload[0].city,
 	state: payload[0].state,
 	zipcode: payload[0].zipcode
-}]]></dw:set-payload>
+} default {}]]></dw:set-payload>
         </dw:transform-message>
-        <logger level="INFO" doc:name="Logger"/>
+
     </flow>
     <flow name="update-address-Flow">
-        <set-variable variableName="empId" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="empId"/>
-        <set-variable variableName="addressId" value="#[message.inboundProperties.'http.uri.params'.addressId]" doc:name="addressId"/>
+
         <dw:transform-message doc:name="Transform Message">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
@@ -177,28 +182,28 @@ payload map {
 }]]></dw:set-payload>
         </dw:transform-message>
         <db:update config-ref="Generic_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[UPDATE address 
-SET "type"=#[payload.type], "number"=#[payload.number], "street"=#[payload.street], "unit"=#[payload.unit], "city"=#[payload.city], "state"=#[payload.state], "zipcode"=#[payload.zipcode] 
-WHERE emp_id = #[flowVars.empId] AND add_id = #[flowVars.addressId]]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[UPDATE address SET address_type=#[payload.type], number=#[payload.number], street=#[payload.street], unit=#[payload.unit], city=#[payload.city], state=#[payload.state], zipcode=#[payload.zipcode] WHERE emp_id = #[flowVars.id] AND add_id = #[flowVars.addressId]]]></db:parameterized-query>
+
 
 
         </db:update>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+
     </flow>
     <flow name="delete-address-Flow">
-        <set-variable variableName="empId" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="empId"/>
-        <set-variable variableName="addressId" value="#[message.inboundProperties.'http.uri.params'.addressId]" doc:name="addressId"/>
+
         <db:delete config-ref="Generic_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[DELETE FROM address WHERE emp_id = #[flowVars.empId] AND add_id = #[flowVars.addressId]]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[DELETE FROM address WHERE emp_id = #[flowVars.id] AND add_id = #[flowVars.addressId]]]></db:parameterized-query>
+
 
         </db:delete>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+
 
     </flow>
 	<flow name="get-communication-collection-Flow">
-        <set-variable variableName="empId" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="empId"/>
+
         <db:select config-ref="Generic_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[SELECT * FROM communication WHERE emp_id = #[flowVars.empId]]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[SELECT * FROM communication WHERE emp_id = #[flowVars.id]]]></db:parameterized-query>
+
 
         </db:select>
         <dw:transform-message doc:name="Transform Message">
@@ -213,16 +218,16 @@ payload map {
 	preferred: $.preferred
 }]]></dw:set-payload>
         </dw:transform-message>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+
     </flow>
     <flow name="create-communication-Flow">
-        <set-variable variableName="empId" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="empId"/>
+
         <dw:transform-message doc:name="Transform Message">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
 {
-	empId: flowVars.empId,
+	empId: flowVars.id,
 	type: payload.type,
 	value: payload.value,
 	preferred: payload.preferred
@@ -232,32 +237,30 @@ payload map {
             <db:parameterized-query><![CDATA[INSERT INTO communication (emp_id, "type", "value", "preferred") VALUES (#[payload.empId], #[payload.type], #[payload.value], #[payload.preferred])]]></db:parameterized-query>
 
         </db:insert>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+
     </flow>
     <flow name="get-communication-item-Flow">
-        <set-variable variableName="empId" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="empId"/>
-        <set-variable variableName="communicationId" value="#[message.inboundProperties.'http.uri.params'.communicationId]" doc:name="communicationId"/>
+
         <db:select config-ref="Generic_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[SELECT * FROM communication WHERE emp_id = #[flowVars.empId] AND comm_id=#[flowVars.communicationId]]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[SELECT * FROM communication WHERE emp_id = #[flowVars.id] AND comm_id=#[flowVars.communicationId]]]></db:parameterized-query>
+
         </db:select>
         <dw:transform-message doc:name="Transform Message">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
-{
-}]]></dw:set-payload>
+payload]]></dw:set-payload>
         </dw:transform-message>
-        <logger level="INFO" doc:name="Logger"/>
+
     </flow>
     <flow name="update-communication-Flow">
-        <set-variable variableName="empId" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="empId"/>
-        <set-variable variableName="communicationId" value="#[message.inboundProperties.'http.uri.params'.communicationId]" doc:name="communicationId"/>
+
         <dw:transform-message doc:name="Transform Message">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
 {
-	empId: flowVars.empId,
+	empId: flowVars.id,
 	type: payload.type,
 	value: payload.value,
 	preferred: payload.preferred
@@ -269,16 +272,15 @@ SET "type"=#[payload.type], "value"=#[payload.value], "preferred"=#[payload.pref
 WHERE id = #[flowVars.id] AND comm_id=#[flowVars.communicationId]]]></db:parameterized-query>
 
         </db:update>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+
     </flow>
     <flow name="delete-communication-Flow">
-        <set-variable variableName="empId" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="empId"/>
-        <set-variable variableName="communicationId" value="#[message.inboundProperties.'http.uri.params'.communicationId]" doc:name="communicationId"/>
+
 
         <db:delete config-ref="Generic_Database_Configuration" doc:name="Database">
             <db:parameterized-query><![CDATA[DELETE FROM communication WHERE id = #[flowVars.id] AND comm_id=#[flowVars.communicationId]]]></db:parameterized-query>
 
         </db:delete>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+
     </flow>
 </mule>

@@ -4,11 +4,30 @@ protocols: [HTTP]
 
 /identification:
   get:
+    description: Get a list of <<resourcePathName>> based on the song title.
     responses: 
       200:
         body: 
-          application/json: 
+          application/json:  
+            example: |
+              [{
+                "firstName": "first_name",
+                "lastName": "last_name",
+                "dob": "2000-01-02" ,
+                "gender": "M",
+                "title": "Manager"
+              }]
   post:
+    body:
+      application/json: 
+        example: |
+          {
+            "firstName": "first_name",
+            "lastName": "last_name",
+            "dob": "2000-01-02" ,
+            "gender": "M",
+            "title": "Manager"
+          }
     responses: 
       201:
   /{id}:
@@ -17,6 +36,14 @@ protocols: [HTTP]
         200:
           body: 
             application/json: 
+              example: |
+                {
+                  "firstName": "first_name",
+                  "lastName": "last_name",
+                  "dob": "2000-01-02" ,
+                  "gender": "M",
+                  "title": "Manager"
+                }
     put:
     delete:
     /address:
@@ -30,6 +57,10 @@ protocols: [HTTP]
           201:
       /{addressId}:
         get:
+          responses:
+            200:
+              body:
+                application/json:
         put:
         delete:
     /communication:
@@ -43,7 +74,9 @@ protocols: [HTTP]
           201:
       /{communicationId}:
         get:
+          responses:
+            200:
+              body:
+                application/json:
         put:
         delete:
-  
-  

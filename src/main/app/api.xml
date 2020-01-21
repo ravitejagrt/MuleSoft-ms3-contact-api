@@ -4,14 +4,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
-    <http:listener-config name="api-httpListenerConfig" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration" />
-    <apikit:config name="api-config" raml="api.raml" consoleEnabled="false" doc:name="Router" keepRamlBaseUri="false">
-        <apikit:flow-mapping resource="/identification" action="get" flow-ref="get:/identification:api-config" />
-        <apikit:flow-mapping resource="/identification/{id}" action="get" flow-ref="get:/identification/{id}:api-config" />
-        <apikit:flow-mapping resource="/identification" action="post" flow-ref="post:/identification:api-config" />
-        <apikit:flow-mapping resource="/identification/{id}" action="put" flow-ref="put:/identification/{id}:api-config" />
-        <apikit:flow-mapping resource="/identification/{id}" action="delete" flow-ref="delete:/identification/{id}:api-config" />
-    </apikit:config>
+    
     <flow name="api-main">
         <http:listener config-ref="api-httpListenerConfig" path="/api/*" doc:name="HTTP" />
         <apikit:router config-ref="api-config" doc:name="APIkit Router" />
@@ -25,18 +18,18 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
         <flow-ref name="get-identifications-collection-Flow" doc:name="get-identifications-collection-Flow" />
     </flow>
     <flow name="get:/identification/{id}:api-config">
-        <set-variable variableName="id" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Variable id" />
+
         <flow-ref name="get-identification-item-Flow" doc:name="get-identification-item-Flow" />
     </flow>
     <flow name="put:/identification/{id}:api-config">
-        <set-variable variableName="id" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Variable" />
+
         <flow-ref name="update-identification-Flow" doc:name="update-identification-Flow" />
     </flow>
     <flow name="post:/identification:api-config">
         <flow-ref name="create-identification-Flow" doc:name="create-identification-Flow" />
     </flow>
     <flow name="delete:/identification/{id}:api-config">
-        <set-variable variableName="id" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="Variable" />
+
         <flow-ref name="delete-identification-Flow" doc:name="delete-identification-Flow" />
     </flow>
     <flow name="get:/identification/{id}/address:api-config">
