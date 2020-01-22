@@ -137,7 +137,7 @@ payload map {
 }]]></dw:set-payload>
         </dw:transform-message>
         <db:insert config-ref="Generic_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[INSERT INTO address ("emp_id", "address_type", "number", "street", "unit", "city", "state", "zipcode") VALUES (#[payload.empId], #[payload.type], #[payload.number], #[payload.street], #[payload.unit], #[payload.city], #[payload.state], #[payload.zipcode])]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[INSERT INTO address (emp_id, address_type, number, street, unit, city, state, zipcode) VALUES (#[payload.empId], #[payload.type], #[payload.number], #[payload.street], #[payload.unit], #[payload.city], #[payload.state], #[payload.zipcode])]]></db:parameterized-query>
         </db:insert>
 
 
@@ -234,7 +234,8 @@ payload map {
 }]]></dw:set-payload>
         </dw:transform-message>
         <db:insert config-ref="Generic_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[INSERT INTO communication (emp_id, "type", "value", "preferred") VALUES (#[payload.empId], #[payload.type], #[payload.value], #[payload.preferred])]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[INSERT INTO communication (emp_id, type, value, preferred) VALUES (#[payload.empId], #[payload.type], #[payload.value], #[payload.preferred])]]></db:parameterized-query>
+
 
         </db:insert>
 
@@ -247,9 +248,15 @@ payload map {
         </db:select>
         <dw:transform-message doc:name="Transform Message">
             <dw:set-payload><![CDATA[%dw 1.0
-%output application/java
+%output application/json  skipNullOn="everywhere"
 ---
-payload]]></dw:set-payload>
+{
+	communicationId: payload[0].comm_id,
+	empId: payload[0].emp_id,
+	type: payload[0].type,
+	value: payload[0].value,
+	preferred: payload[0].preferred
+} default {}]]></dw:set-payload>
         </dw:transform-message>
 
     </flow>
@@ -267,9 +274,8 @@ payload]]></dw:set-payload>
 }]]></dw:set-payload>
         </dw:transform-message>
         <db:update config-ref="Generic_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[UPDATE communication 
-SET "type"=#[payload.type], "value"=#[payload.value], "preferred"=#[payload.preferred] 
-WHERE id = #[flowVars.id] AND comm_id=#[flowVars.communicationId]]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[UPDATE communication SET type=#[payload.type], value=#[payload.value], preferred=#[payload.preferred] WHERE emp_id = #[flowVars.id] AND comm_id=#[flowVars.communicationId]]]></db:parameterized-query>
+
 
         </db:update>
 
