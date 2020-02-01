@@ -1,0 +1,154 @@
+#%RAML 1.0
+title: MS3 Contact API
+version: 1.0
+protocols: [HTTP]
+mediaType: application/json
+
+traits:
+  common-headers: !include traits/api-header-traits.raml
+  content-type: !include traits/content-type-traits.raml
+  error-response-traits: !include traits/error-response-traits.raml 
+
+uses: 
+  identification-types: /types/types_identification.raml
+  communication-types: /types/types_communication.raml
+  address-types: /types/types_address.raml
+#  order-types: /types/types_orders.raml
+#  orderLine-types: /types/types_orderLines.raml
+#  packaged-types: /types/types_packagedItem.raml
+#  address-types: /types/types_address.raml
+
+/identification:
+  get:
+    description: Get a list of <<resourcePathName>>
+    is: [common-headers, error-response-traits]
+    responses: 
+      200:
+        body: 
+          application/json:
+            type: identification-types.getIdentificationsResponse[]
+            example: !include examples/identifications-response.json
+  post:
+    description: post to create identification
+    body:
+      application/json: 
+        type: identification-types.postIdentificationRequest
+        example: !include examples/identification-request.json
+    responses: 
+      201:
+  /{id}:
+    get:
+      description: Get a <<resourcePathName>>
+      is: [common-headers, error-response-traits]
+      responses: 
+        200:
+          body: 
+            application/json: 
+              type: identification-types.identificationResponse
+              example: !include examples/identification-response.json
+    put:
+      description: Get a <<resourcePathName>>
+      is: [common-headers, error-response-traits]
+      body:
+        application/json: 
+          type: identification-types.postIdentificationRequest
+          example: !include examples/identification-request.json      
+      responses: 
+        200:
+          body: 
+            application/json: 
+              type: identification-types.identificationResponse
+              example: !include examples/identification-response.json
+    delete:
+      description: Get a <<resourcePathName>>
+      is: [common-headers, error-response-traits]
+      responses:
+        200:
+          body:
+            application/json:
+    /address:
+      get:
+        description: Get <<resourcePathName>>
+        is: [common-headers, error-response-traits]
+        responses: 
+          200:
+            body: 
+              application/json:
+                type: address-types.addressResponse[]
+                example: !include examples/addressess-response.json
+      post:
+        description: Get <<resourcePathName>>
+        is: [common-headers, error-response-traits]
+        body:
+          application/json:
+            type: address-types.addressRequest
+            example: !include examples/address-request.json
+        responses: 
+          201:
+      /{addressId}:
+        get:
+          responses:
+            200:
+              body:
+                application/json:
+                  type: address-types.addressResponse
+                  example: !include examples/address-response.json
+        put:
+          description: Get <<resourcePathName>>
+          is: [common-headers, error-response-traits]
+          body:
+            application/json:
+              type: address-types.addressRequest
+              example: !include examples/address-request.json
+          responses: 
+            200:
+        delete:
+          responses: 
+            200:
+    /communication:
+      get:
+        description: Get <<resourcePathName>>
+        is: [common-headers, error-response-traits]
+        responses: 
+          200:
+            body: 
+              application/json:
+                type: communication-types.communicationResponse[]
+                example: !include examples/communications-response.json
+      post:
+        description: Get <<resourcePathName>>
+        is: [common-headers, error-response-traits]
+        body:
+          application/json:
+            type: communication-types.communicationrequest
+            example: !include examples/communication-request.json
+        responses: 
+          201:
+      /{communicationId}:
+        get:
+          description: Get <<resourcePathName>>
+          is: [common-headers, error-response-traits]
+          responses: 
+            200:
+              body: 
+                application/json:
+                  type: communication-types.communicationResponse
+                  example: !include examples/communication-response.json
+        put:
+          description: Get <<resourcePathName>>
+          is: [common-headers, error-response-traits]
+          body:
+            application/json:
+              type: address-types.addressRequest
+              example: !include examples/address-request.json
+          responses: 
+            200:
+              body:
+                application/json:
+        delete:
+          description: Get a <<resourcePathName>>
+          is: [common-headers, error-response-traits]
+          responses:
+            200:
+              body:
+                application/json:

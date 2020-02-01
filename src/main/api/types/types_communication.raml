@@ -1,0 +1,36 @@
+#%RAML 1.0 Library
+usage:
+   library for communication Service
+
+types:
+  communicationrequest:
+    description: type for the packagedItem
+    type: communication
+
+  communicationResponse:
+    type: communication
+    properties:
+      communicationId:
+        description: communication id
+        type: integer
+        required: true
+
+  communication:
+    description: object for the packagedItem
+    properties:
+      empId:
+        description: employee identification
+        type: integer
+        required: true
+      type:
+        description: type of communication
+        type: string 
+        required: true
+      value:
+        description: email or phone
+        type: string
+        required: true
+      preferred:
+        description: preference
+        type: boolean
+        required: true

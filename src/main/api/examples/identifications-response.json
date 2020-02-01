@@ -1,0 +1,10 @@
+[
+	{
+		"empId": 1,
+		"firstName": "first_name",
+		"lastName": "last_name",
+		"dob": "2000-01-02",
+		"gender": "M",
+		"title": "Manager"
+	}
+]

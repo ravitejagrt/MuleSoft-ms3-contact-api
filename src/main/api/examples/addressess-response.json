@@ -1,0 +1,13 @@
+[
+  {
+    "empId": 1,
+    "addressId": 1,
+    "type": "home",
+    "number": 111,
+    "street": "blah blah St",
+    "unit": "1 a",
+    "city": "Somewhere",
+    "state": "WV",
+    "zipcode": "12345"
+  }
+]

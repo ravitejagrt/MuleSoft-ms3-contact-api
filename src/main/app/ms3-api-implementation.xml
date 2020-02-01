@@ -48,8 +48,9 @@ payload map {
 
     </flow>
     <flow name="create-identification-Flow">
+
         <dw:transform-message doc:name="Transform Message">
-            <dw:input-payload doc:sample="sample_data\json_2.json"/>
+            <dw:input-payload mimeType="application/json" doc:sample="sample_data\json_2.json"/>
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
@@ -69,6 +70,7 @@ payload map {
     </flow>
     <flow name="update-identification-Flow">
         <dw:transform-message doc:name="Transform Message">
+        	<dw:input-payload mimeType="application/json"/>
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
@@ -122,6 +124,7 @@ payload map {
     <flow name="create-address-Flow">
 
         <dw:transform-message doc:name="Transform Message">
+        	<dw:input-payload mimeType="application/json"/>
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
@@ -168,6 +171,7 @@ payload map {
     <flow name="update-address-Flow">
 
         <dw:transform-message doc:name="Transform Message">
+        	<dw:input-payload mimeType="application/json"/>
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
@@ -223,6 +227,7 @@ payload map {
     <flow name="create-communication-Flow">
 
         <dw:transform-message doc:name="Transform Message">
+        	<dw:input-payload mimeType="application/json"/>
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
@@ -263,6 +268,7 @@ payload map {
     <flow name="update-communication-Flow">
 
         <dw:transform-message doc:name="Transform Message">
+        	<dw:input-payload mimeType="application/json"/>
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---

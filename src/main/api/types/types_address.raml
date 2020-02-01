@@ -1,0 +1,54 @@
+#%RAML 1.0 Library
+usage:
+   library for address Service
+   
+types:
+  addressResponse:
+    type: address
+    description: type for address response
+    properties:
+      addressId:
+        description: address id
+        type: integer
+        required: true
+  addressRequest:
+    type: address
+    description: type for address request    
+      
+  address:
+    type: object
+    description: type for address type object
+    properties:
+      empId:
+        description: address number
+        type: number
+        required: true
+      type:        
+        description: type of address
+        type: string
+        required: true
+      number:
+        description: house number
+        type: number
+        required: true
+      street:
+        description: street
+        type: string
+        required: true
+      unit:
+        description: unit
+        type: string
+        required: true
+      city:
+        description: city
+        type: string
+        required: true
+      state:
+        description: state
+        type: string
+        required: true
+      zipcode:
+        description: zipcode
+        type: string
+        required: true
+      

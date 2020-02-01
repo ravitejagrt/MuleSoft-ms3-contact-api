@@ -1,0 +1,45 @@
+#%RAML 1.0 Library
+usage:
+   library for identification Service
+
+types:
+  identificationResponse:
+    description: type for the identifications
+    type: identification
+
+  getIdentificationsResponse:
+    description: type for identifications
+    type: identification
+    properties:
+      empId:
+        description: employee identification number
+        type: integer
+        required: true
+        
+  postIdentificationRequest:
+    description: type for identifications
+    type: identification
+    
+  identification:
+    description: object for the identification
+    properties:
+      firstName:
+        description: first name
+        type: string
+        required: true
+      lastName:
+        description: last name
+        type: string 
+        required: true
+      dob:
+        description: dob
+        type: string
+        required: true
+      gender:
+        description: gender
+        type: string
+        required: true
+      title:
+        description: title
+        type: string
+        required: true

@@ -1,0 +1,89 @@
+#%RAML 1.0 Trait
+uses: 
+  error-types: ../types/types_error.raml
+  
+responses: 
+  400:
+    description: 
+    body: 
+      application/json:
+        type: error-types.errorResponse
+        example:
+          correlationId:  "TEST123"
+          errorCode:  "MWGXXX"
+          errorMessage:  "The request cannot be fulfilled due to incorrect request message, please check the request."
+          timeStamp:  "2018-04-23T14:25:43"
+  401:
+    description: 
+    body: 
+      application/json:
+        type: error-types.errorResponse
+        example:
+          correlationId:  "TEST123"
+          errorCode:  "MWGXXX"
+          errorMessage:  "Please ensure that you are authorised and have correct creadentials."
+          timeStamp:  "2018-04-23T14:25:43"
+  404:
+    description: 
+    body: 
+      application/json:
+        type: error-types.errorResponse
+        example:
+          correlationId:  "TEST123"
+          errorCode:  "MWGXXX"
+          errorMessage:  "The requested operation could not be found but may be available again in the future"
+          timeStamp:  "2018-04-23T14:25:43"
+  405:
+    description: 
+    body: 
+      application/json:
+        type: error-types.errorResponse
+        example:
+          correlationId:  "TEST123"
+          errorCode:  "MWGXXX"
+          errorMessage:  "A request was made using a request method not supported by that operation."
+          timeStamp:  "2018-04-23T14:25:43"
+            
+  406:
+    description: 
+    body: 
+      application/json:
+        type: error-types.errorResponse
+        example:
+          correlationId:  "TEST123"
+          errorCode:  "MWGXXX"
+          errorMessage:  "Please inspect full content of the request"
+          timeStamp:  "2018-04-23T14:25:43"
+
+  415:
+    description: 
+    body: 
+      application/json:
+        type: error-types.errorResponse
+        example:
+          correlationId:  "TEST123"
+          errorCode:  "MWGXXX"
+          errorMessage:  "The server will not accept the request as the media type is not supported"
+          timeStamp:  "2018-04-23T14:25:43"
+            
+  500:
+    description: 
+    body: 
+      application/json:
+        type: error-types.errorResponse
+        example:
+          correlationId:  "TEST123"
+          errorCode:  "MWGXXX"
+          errorMessage:  "The server encountered an unexpected condition which prevented it from fulfilling the request."
+          timeStamp:  "2018-04-23T14:25:43"
+            
+  503:
+    description: 
+    body: 
+      application/json:
+        type: error-types.errorResponse
+        example:
+          correlationId:  "TEST123"
+          errorCode:  "MWGXXX"
+          errorMessage:  "The server is currently unable to handle the request due to a temporary overloading or maintenance of the server."
+          timeStamp:  "2018-04-23T14:25:43"

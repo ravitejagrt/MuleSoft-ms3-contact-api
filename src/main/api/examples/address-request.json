@@ -1,0 +1,10 @@
+{
+  "empId": 1,
+  "type": "mailing",
+  "number": 112,
+  "street": "blah blah St",
+  "unit": "1 a",
+  "city": "Somewhere",
+  "state": "WV",
+  "zipcode": "12345"
+}

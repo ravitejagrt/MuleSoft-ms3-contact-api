@@ -1,0 +1,21 @@
+#%RAML 1.0 Library
+usage:
+   library for errors
+   
+types:
+  errorResponse:
+    description: ErrorResponse type
+    type: object
+    properties:
+      errorCode:
+        description: code associated with the error/exception
+        type: string
+      timeStamp:
+        description: timestamp at which the error occurred
+        type: string
+      errorMessage:
+        description: message associated with the error/exception
+        type: string
+      correlationId:
+        description: Unique ID of the request
+        type: string
