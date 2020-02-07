@@ -3,6 +3,7 @@ title: MS3 Contact API
 version: 1.0
 protocols: [HTTP]
 mediaType: application/json
+baseUri: http://localhost:8081/api/
 
 traits:
   common-headers: !include traits/api-header-traits.raml
@@ -10,14 +11,23 @@ traits:
   error-response-traits: !include traits/error-response-traits.raml 
 
 uses: 
-  identification-types: /types/types_identification.raml
-  communication-types: /types/types_communication.raml
-  address-types: /types/types_address.raml
-#  order-types: /types/types_orders.raml
-#  orderLine-types: /types/types_orderLines.raml
-#  packaged-types: /types/types_packagedItem.raml
-#  address-types: /types/types_address.raml
+  identification-types: types/types_identification.raml
+  communication-types: types/types_communication.raml
+  address-types: types/types_address.raml
+  employee-types: types/types_employee.raml
 
+/employee:
+  post:
+    description: Get a list of <<resourcePathName>>
+    is: [common-headers, error-response-traits]
+    body:
+      application/json: 
+        type: employee-types.postEmployeeRequest
+        example: !include examples/employee-request.json
+    responses: 
+      200:
+        body:
+          application/json:
 /identification:
   get:
     description: Get a list of <<resourcePathName>>
@@ -120,7 +130,7 @@ uses:
         is: [common-headers, error-response-traits]
         body:
           application/json:
-            type: communication-types.communicationrequest
+            type: communication-types.communicationRequest
             example: !include examples/communication-request.json
         responses: 
           201:
@@ -139,8 +149,8 @@ uses:
           is: [common-headers, error-response-traits]
           body:
             application/json:
-              type: address-types.addressRequest
-              example: !include examples/address-request.json
+              type: communication-types.communicationRequest
+              example: !include examples/communication-request.json
           responses: 
             200:
               body:

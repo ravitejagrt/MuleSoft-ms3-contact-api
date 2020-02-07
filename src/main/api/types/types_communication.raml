@@ -3,8 +3,8 @@ usage:
    library for communication Service
 
 types:
-  communicationrequest:
-    description: type for the packagedItem
+  communicationRequest:
+    description: type for the communication
     type: communication
 
   communicationResponse:
@@ -16,12 +16,8 @@ types:
         required: true
 
   communication:
-    description: object for the packagedItem
+    description: object for the communication
     properties:
-      empId:
-        description: employee identification
-        type: integer
-        required: true
       type:
         description: type of communication
         type: string 

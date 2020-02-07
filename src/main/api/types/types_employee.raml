@@ -1,0 +1,65 @@
+#%RAML 1.0 Library
+usage:
+   library for identification Service
+   
+uses:
+  address-types: types_address.raml
+  communication-types: types_communication.raml
+  identification-types: types_identification.raml
+
+types:
+  employeeResponse:
+    description: type for the employee
+    type: employee
+    properties:
+      identification:
+        type: identification-types.identification
+        properties:
+          empId:
+            description: employee identification number
+            type: integer
+            required: true
+      address:
+        type: address-types.address
+        properties:
+          addressId:
+            description: address id
+            type: integer
+            required: true
+      communication:
+        type: communication-types.communication
+        properties:
+          communicationId:
+            description: communication id
+            type: integer
+            required: true            
+
+  getEmployeesResponse:
+    description: type for identifications
+    type: employee
+    properties:
+      empId:
+        description: employee identification number
+        type: integer
+        required: true
+        
+  postEmployeeRequest:
+    description: type for employee
+    type: employee
+    
+  employee:
+    description: object for the employee
+    properties:
+      identification:
+        description: identification details of employee
+        type: identification-types.identification
+        required: true
+      addresses:
+        description: address details of employee
+        type: address-types.address[]
+        required: true
+      communications:
+        description: communication details of employee
+        type: communication-types.communication[]
+        required: true
+        

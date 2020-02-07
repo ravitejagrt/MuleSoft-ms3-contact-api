@@ -7,12 +7,17 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
     
     <flow name="api-main">
         <http:listener config-ref="api-httpListenerConfig" path="/api/*" doc:name="HTTP" />
+        <logger message="#[payload] -- #[message.payloadAs(java.lang.String)]" level="INFO" doc:name="Logger"/>
         <apikit:router config-ref="api-config" doc:name="APIkit Router" />
+        <logger message="output payload : #[message.payloadAs(java.lang.String)]" level="INFO" doc:name="Logger"/>
         <exception-strategy ref="api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy" />
     </flow>
     <flow name="api-console">
         <http:listener config-ref="api-httpListenerConfig" path="/console/*" doc:name="HTTP" />
         <apikit:console config-ref="api-config" doc:name="APIkit Console" />
+    </flow>
+    <flow name="post:/employee:api-config">
+        <flow-ref name="create-employee-Flow" doc:name="create-employee-Flow" />
     </flow>
     <flow name="get:/identification:api-config">
         <flow-ref name="get-identifications-collection-Flow" doc:name="get-identifications-collection-Flow" />

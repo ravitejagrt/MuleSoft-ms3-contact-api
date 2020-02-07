@@ -14,9 +14,10 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
     <apikit:config name="api-config" raml="ms3-contacts-api.raml" consoleEnabled="false" doc:name="Router" keepRamlBaseUri="false">
         <apikit:flow-mapping resource="/identification" action="get" flow-ref="get:/identification:api-config"/>
         <apikit:flow-mapping resource="/identification/{id}" action="get" flow-ref="get:/identification/{id}:api-config"/>
-        <apikit:flow-mapping resource="/identification" action="post" flow-ref="post:/identification:api-config"/>
+        <apikit:flow-mapping resource="/identification" action="post" content-type="application/json" flow-ref="post:/identification:api-config"/>
         <apikit:flow-mapping resource="/identification/{id}" action="put" flow-ref="put:/identification/{id}:api-config"/>
         <apikit:flow-mapping resource="/identification/{id}" action="delete" flow-ref="delete:/identification/{id}:api-config"/>
+        <apikit:flow-mapping resource="/employee" action="post" content-type="application/json" flow-ref="post:/employee:api-config"/>
     </apikit:config>
     <db:generic-config name="Generic_Database_Configuration" url="jdbc:mysql://root:admin@127.0.0.1:3306/db" driverClassName="com.mysql.cj.jdbc.Driver" doc:name="Generic Database Configuration"/>
  <!--   <spring:beans>
