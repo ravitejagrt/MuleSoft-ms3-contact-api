@@ -1,0 +1,23 @@
+{
+	"identification": {
+		"firstName": "first_name",
+		"lastName": "last_name",
+		"dob": "2000-01-02",
+		"gender": "M",
+		"title": "Manager"
+	},
+	"addresses": [{
+		"type": "mailing",
+		"number": 112,
+		"street": "blah blah St",
+		"unit": "1 a",
+		"city": "Somewhere",
+		"state": "WV",
+		"zipcode": "12345"
+	}],
+	"communications": [{
+		"type": "email",
+		"value": "emp4@sample.com",
+		"preferred": true
+	}]
+}
