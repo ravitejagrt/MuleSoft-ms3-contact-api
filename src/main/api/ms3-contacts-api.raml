@@ -2,7 +2,6 @@
 title: MS3 Contact API
 version: 1.0
 protocols: [HTTP]
-mediaType: application/json
 baseUri: http://localhost:8081/api/
 
 traits:
@@ -14,7 +13,6 @@ uses:
   identification-types: /types/types_identification.raml
   communication-types: /types/types_communication.raml
   address-types: /types/types_address.raml
-  employee-types: /types/types_employee.raml
 
 /employee:
   post:
@@ -22,7 +20,21 @@ uses:
     is: [common-headers, error-response-traits]
     body:
       application/json: 
-        type: employee-types.postEmployeeRequest
+        type: object
+        description: object for the employee
+        properties:
+          identification:
+            description: identification details of employee
+            type: identification-types.identification
+            required: true
+          addresses:
+            description: address details of employee
+            type: address-types.address[]
+            required: true
+          communications:
+            description: communication details of employee
+            type: communication-types.communication[]
+            required: true
         example: !include examples/employee-request.json
     responses: 
       200:
