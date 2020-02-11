@@ -16,7 +16,7 @@
 
 * If you are using mule runtime standalone server, start the server using the follwing command from bin directory
 
-### mule
+### `mule`
 
 * Run the following command from the project directory where github project is cloned
 
