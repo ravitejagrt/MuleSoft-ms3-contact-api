@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <choice-exception-strategy name="apiKitExceptionStrategy">
+        <catch-exception-strategy when="exception.causedBy(org.springframework.security.authentication.BadCredentialsException)" doc:name="org.springframework.security.authentication.BadCredentialsException">
+            <set-property propertyName="http.status" value="#[401]" doc:name="HTTP 401"/>
+            <set-variable variableName="vErrorCode" value="${authorization.error.code}" doc:name="Set Error Code"/>
+            <set-variable variableName="vErrorMessage" value="${authorization.error.message}" doc:name="Set Error Message"/>
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>
+        </catch-exception-strategy>
+        <catch-exception-strategy when="#[exception.causedBy(org.mule.module.apikit.exception.BadRequestException)]" doc:name="Caused By (org.mule.module.apikit.exception.BadRequestException)">
+            <set-property propertyName="http.status" value="#[400]" doc:name="HTTP 400"/>
+            <set-variable variableName="vErrorCode" value="${bad.request.error.code}" doc:name="Set Error Code"/>
+            <set-variable variableName="vErrorMessage" value="#[exception.getCause().getMessage()]" doc:name="Set Error Message"/>
+
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>
+        </catch-exception-strategy>
+        <catch-exception-strategy doc:name="Caused By (org.mule.module.apikit.exception.NotFoundException)" when="#[exception.causedBy(org.mule.module.apikit.exception.NotFoundException)]">
+            <set-property propertyName="http.status" value="#[404]" doc:name="HTTP 404"/>
+            <set-variable variableName="vErrorCode" value="${not.found.error.code}" doc:name="Set Error Code"/>
+            <set-variable variableName="vErrorMessage" value="${not.found.error.message}" doc:name="Set Error Message"/>
+
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>
+        </catch-exception-strategy>
+        <catch-exception-strategy doc:name="Caused By (org.mule.module.apikit.exception.MethodNotAllowedException)" when="#[exception.causedBy(org.mule.module.apikit.exception.MethodNotAllowedException)]">
+            <set-property propertyName="http.status" value="#[405]" doc:name="HTTP 405"/>
+            <set-variable variableName="vErrorCode" value="${method.not.found.error.code}" doc:name="Set Error Code"/>
+            <set-variable variableName="vErrorMessage" value="${method.not.found.error.message}" doc:name="Set Error Message"/>
+
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>
+        </catch-exception-strategy>
+        <catch-exception-strategy when="#[exception.causedBy(org.mule.module.apikit.exception.NotAcceptableException)]" doc:name="Caused By (org.mule.module.apikit.exception.NotAcceptableException)">
+            <set-property propertyName="http.status" value="#[406]" doc:name="HTTP 406"/>
+            <set-variable variableName="vErrorCode" value="${not.acceptable.error.code}" doc:name="Set Error Code"/>
+            <set-variable variableName="vErrorMessage" value="${not.acceptable.error.message}" doc:name="Set Error Message"/>
+
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>
+        </catch-exception-strategy>
+        <catch-exception-strategy when="#[exception.causedBy(org.mule.module.apikit.exception.UnsupportedMediaTypeException)]" doc:name="Caused By (org.mule.module.apikit.exception.UnsupportedMediaTypeException)">
+            <set-property propertyName="http.status" value="#[415]" doc:name="HTTP 415"/>
+            <set-variable variableName="vErrorCode" value="${invalid.media.type.error.code}" doc:name="Set Error Code"/>
+            <set-variable variableName="vErrorMessage" value="${invalid.media.type.error.message}" doc:name="Set Error Message"/>
+
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>
+        </catch-exception-strategy>
+        <catch-exception-strategy when="exception.causedBy(uk.co.frontierag.edge.common.service.exception.UnauthorisedException)" doc:name="uk.co.frontierag.edge.common.service.exception.UnauthorisedException">
+            <set-property propertyName="http.status" value="#[401]" doc:name="HTTP 500"/>
+            <set-variable variableName="vErrorCode" value="${authorization.error.code}" doc:name="Set Error Code"/>
+            <set-variable variableName="vErrorMessage" value="#[exception.?message]" doc:name="Set Error Message"/>
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>
+        </catch-exception-strategy>	
+        
+        <catch-exception-strategy doc:name="defaultCatchExceptionStrategy">
+            <set-property propertyName="http.status" value="#[500]" doc:name="HTTP 500"/>
+            <set-variable variableName="vErrorCode" value="${default.error.code}" doc:name="Set Error Code"/>
+            <set-variable variableName="vErrorMessage" value="${default.error.message}" doc:name="Set Error Message"/>
+
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>
+        </catch-exception-strategy>
+        
+    </choice-exception-strategy>
+    <choice-exception-strategy name="defaultChoiceExceptionStrategy">
+		<catch-exception-strategy  doc:name="CompositeRoutingException" when="exception.causedBy(org.mule.routing.CompositeRoutingException)">
+            <set-property propertyName="http.status" value="#[500]" doc:name="HTTP 500"/>
+            <set-variable variableName="vErrorCode" value="${routing.error.code}" doc:name="Set Error Code"/>
+            <set-variable variableName="vErrorMessage" value="#[[]]" doc:name="Set Error Message"/>
+            <foreach collection="#[exception.?exceptions]" doc:name="For Each">
+                <set-payload value="#[flowVars.counter + '=' +payload.?cause]" doc:name="Set Payload"/>
+                <expression-component doc:name="Expression"><![CDATA[flowVars.vErrorMessage.add(payload);]]></expression-component>
+            </foreach>
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>
+            </catch-exception-strategy>
+		<catch-exception-strategy  doc:name="ResponseValidatorException" when="exception.causedBy(org.mule.module.http.internal.request.ResponseValidatorException)">
+            <set-property propertyName="http.status" value="#[message.inboundProperties.'http.status' != null ? message.inboundProperties.'http.status' : 500]" doc:name="Set HTTP Status"/>
+            <set-variable variableName="vErrorCode" value="${default.error.code}" doc:name="Set Error Code"/>
+			<set-variable variableName="vErrorMessage" value="#[exception.message]" doc:name="Set Error Message"/>
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+//%var errorCode = payload.errorCode when payload.errorCode != null otherwise flowVars.vErrorCode
+//%var errorMessage = payload.errorMessage when payload.errorMessage != null otherwise flowVars.vErrorMessage when flowVars.vErrorMessage != null otherwise p('default.error.message')
+%var genericErrorMessage = p('not.found.error.message') when flowVars.vErrorMessage contains '404' otherwise p('503.error.message') when flowVars.vErrorMessage contains '503' otherwise flowVars.vErrorMessage
+%var genericErrorCode = p('not.found.error.code') when flowVars.vErrorMessage contains '404' otherwise p('503.error.code') when flowVars.vErrorMessage contains '503' otherwise flowVars.vErrorCode
+%var errorCode = payload.errorCode when not ((payload is :string or payload is :binary or payload.errorCode == null) default true) otherwise genericErrorCode
+%var errorMessage = payload.errorMessage when not ((payload is :string or payload is :binary or payload.errorMessage == null) default true) otherwise genericErrorMessage when genericErrorMessage != null otherwise p('default.error.message')
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : errorCode,
+	"errorMessage" : errorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>		   
+		</catch-exception-strategy>
+		<catch-exception-strategy  doc:name="SQLException" when="exception.causedBy(java.sql.SQLException)">
+			<set-property propertyName="http.status" value="#[500]" doc:name="HTTP 500" />
+            <set-variable variableName="vErrorCode" value="${sql.error.code}" doc:name="Set Error Code"/>
+            <set-variable variableName="vErrorMessage" value="#[org.mule.util.ExceptionUtils.getRootCauseMessage(exception)]" doc:name="Set Error Message"/>
+
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>	   
+		</catch-exception-strategy>			
+		<catch-exception-strategy  doc:name="Connect and Socket Exception" when="exception.causedBy(java.net.ConnectException) || exception.causedBy(org.apache.commons.httpclient.ConnectTimeoutException)|| exception.causedBy(java.net.UnknownHostException)">
+			<set-property propertyName="http.status" value="#[502]" doc:name="HTTP 500" />
+            <set-variable variableName="vErrorCode" value="${system.connection.error.code}" doc:name="Set Error Code"/>
+            <set-variable variableName="vErrorMessage" value="#[org.mule.util.ExceptionUtils.getRootCauseMessage(exception)]" doc:name="Set Error Message"/>
+
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>	    
+<!-- 		    Need to have some retry policy when connection and socket exceptions raised -->
+<!-- 		     <flow-ref name="sendMessageForReprocessingSubFlow" doc:name="sendMessageForReprocessingSubFlow"/>          -->
+		</catch-exception-strategy>
+	
+		<catch-exception-strategy  doc:name="SMTPException" when="exception.causeMatches('com.sun.mail.smtp.*')">
+			<set-property propertyName="http.status" value="#[500]" doc:name="HTTP 500" />
+            <set-variable variableName="vErrorCode" value="${smtp.error.code}" doc:name="Set Error Code"/>
+			<set-variable variableName="vErrorMessage" value="#[org.mule.util.ExceptionUtils.getRootCauseMessage(exception)]" doc:name="Set Error Message"/>
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>	   
+		</catch-exception-strategy>
+		<catch-exception-strategy when="exception.causedBy(org.mule.extension.validation.api.MultipleValidationException)" doc:name="org.mule.extension.validation.api.MultipleValidationException">
+            <set-property propertyName="http.status" value="#[500]" doc:name="HTTP 500"/>
+            <set-variable variableName="vErrorCode" value="${validation.error.code}" doc:name="Set Error Code"/>
+            <set-variable variableName="vErrorMessage" value="#[exception.?message]" doc:name="Set Error Message"/>
+
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>
+        </catch-exception-strategy>
+        <catch-exception-strategy when="exception.causedBy(org.mule.extension.validation.api.ValidationException)" doc:name="org.mule.extension.validation.api.ValidationException">
+            <set-property propertyName="http.status" value="#[500]" doc:name="HTTP 500"/>
+            <set-variable variableName="vErrorCode" value="${validation.error.code}" doc:name="Set Error Code"/>
+            <set-variable variableName="vErrorMessage" value="#[exception.?message]" doc:name="Set Error Message"/>
+
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>
+        </catch-exception-strategy>
+        <catch-exception-strategy when="exception.causedBy(uk.co.frontierag.edge.common.service.exception.UnauthorisedException)" doc:name="uk.co.frontierag.edge.common.service.exception.UnauthorisedException">
+            <set-property propertyName="http.status" value="#[500]" doc:name="HTTP 500"/>
+            <set-variable variableName="vErrorCode" value="${authorization.error.code}" doc:name="Set Error Code"/>
+            <set-variable variableName="vErrorMessage" value="#[exception.?message]" doc:name="Set Error Message"/>
+            <dw:transform-message doc:name="Set Error Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>
+        </catch-exception-strategy>	
+       
+        <catch-exception-strategy doc:name="Default CatchExceptionStrategy">
+        <set-property propertyName="http.status" value="#[500]" doc:name="HTTP 500"/>
+        <set-variable variableName="vErrorCode" value="${default.error.code}" doc:name="Set Error Code"/>
+        <set-variable variableName="vErrorMessage" value="${default.error.message}" doc:name="Set Error Message"/>
+        <dw:transform-message doc:name="Set Error Response">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"correlationId" : flowVars.vCorrelationId,
+	"errorCode" : flowVars.vErrorCode,
+	"errorMessage" : flowVars.vErrorMessage,
+	"timeStamp" : now as :string {format: p('date.time.format')}
+}]]></dw:set-payload>
+        </dw:transform-message>
+        <flow-ref name="error-logger-sub-flow" doc:name="error-logger-sub-flow"/>
+    </catch-exception-strategy>
+	
+	</choice-exception-strategy>
+    
+    </mule>

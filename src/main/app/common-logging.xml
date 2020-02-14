@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp"
+	 xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+
+    
+    <queued-asynchronous-processing-strategy name="Queued_Asynchronous_Processing_Strategy" maxThreads="${queued.async.processing.strategy.max.threads}" threadWaitTimeout="${queued.async.processing.strategy.wait.timeout.milli}" doc:name="Queued Asynchronous Processing Strategy"/>
+    <sub-flow name="common-flow-set-timestamp">
+        <dw:transform-message doc:name="Set Logging Properties">
+            <dw:set-variable variableName="vTimeStamp"><![CDATA[%dw 1.0
+%output application/java
+---
+now as :string {format: p('date.time.format')}]]></dw:set-variable>
+        </dw:transform-message>
+    </sub-flow>
+    <sub-flow name="invoke-pre-process-subflow">
+		<choice doc:name="Choice">
+			<when expression="#[flowVars.preProcessFlowName != 'no-pre-process-flow']">
+				<flow-ref doc:name="Invoke PreProcess Flow" name="#[flowVars.preProcessFlowName]" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" message='#["No log pre process flow configured"]'/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+    <sub-flow name="entry-logger-sub-flow">
+        <flow-ref name="common-flow-set-timestamp" doc:name="common-flow-set-timestamp"/>
+        <set-variable value="#[flowVars.entryPreProcessFlow == null  ? 'no-pre-process-flow' : flowVars.entryPreProcessFlow]" doc:name="Set Pre Process Flow Name Variable"  variableName="preProcessFlowName"/>
+		<flow-ref doc:name="invoke-pre-process-subflow"  name="invoke-pre-process-subflow" />
+        <enricher source="#[payload]" target="#[flowVars['loggerPayload']]" doc:name="Message Enricher">
+            <parse-template location="${entry.logger.template.path}" doc:name="Parse Entry Logger Template"/>
+        </enricher>
+        <logger message="#[flowVars['loggerPayload']]" level="INFO" doc:name="Logger"/>
+    </sub-flow>
+    <sub-flow name="call-entry-logger-sub-flow">
+    <flow-ref name="common-flow-set-timestamp" doc:name="common-flow-set-timestamp"/>
+        <set-variable value="#[flowVars.callEntryPreProcessFlow == null  ? 'no-pre-process-flow' : flowVars.callEntryPreProcessFlow]" doc:name="Set Pre Process Flow Name Variable"  variableName="preProcessFlowName"/>
+		<flow-ref doc:name="invoke-pre-process-subflow"  name="invoke-pre-process-subflow" />
+        <enricher source="#[payload]" target="#[flowVars['loggerPayload']]" doc:name="Message Enricher">
+            <parse-template location="${call.entry.logger.template.path}" doc:name="Parse Call Entry Logger Template"/>
+        </enricher>
+        <logger message="#[flowVars['loggerPayload']]" level="INFO" doc:name="Logger"/>
+    </sub-flow>
+    <sub-flow name="call-exit-logger-sub-flow">
+    <flow-ref name="common-flow-set-timestamp" doc:name="common-flow-set-timestamp"/>
+        <set-variable value="#[flowVars.callExitPreProcessFlow == null  ? 'no-pre-process-flow' : flowVars.callExitPreProcessFlow]" doc:name="Set Pre Process Flow Name Variable"  variableName="preProcessFlowName"/>
+		<flow-ref doc:name="invoke-pre-process-subflow"  name="invoke-pre-process-subflow" />
+        <enricher source="#[payload]" target="#[flowVars['loggerPayload']]" doc:name="Message Enricher">
+            <parse-template location="${call.exit.logger.template.path}" doc:name="Parse Call Exit Logger Template"/>
+        </enricher>
+        <logger message="#[flowVars['loggerPayload']]" level="INFO" doc:name="Logger"/>
+    </sub-flow>  
+    <sub-flow name="exit-logger-sub-flow">
+    <flow-ref name="common-flow-set-timestamp" doc:name="common-flow-set-timestamp"/>
+        <set-variable value="#[flowVars.exitPreProcessFlow == null  ? 'no-pre-process-flow' : flowVars.exitPreProcessFlow]" doc:name="Set Pre Process Flow Name Variable"  variableName="preProcessFlowName"/>
+		<flow-ref doc:name="invoke-pre-process-subflow"  name="invoke-pre-process-subflow" />
+        <enricher source="#[payload]" target="#[flowVars['loggerPayload']]" doc:name="Message Enricher">
+            <parse-template location="${exit.logger.template.path}" doc:name="Parse Exit Logger Template"/>
+        </enricher>
+        <logger message="#[flowVars['loggerPayload']]" level="INFO" doc:name="Logger"/>
+    </sub-flow> 
+    <sub-flow name="process-logger-sub-flow">
+    <flow-ref name="common-flow-set-timestamp" doc:name="common-flow-set-timestamp"/>
+        <set-variable value="#[flowVars.processPreProcessFlow == null  ? 'no-pre-process-flow' : flowVars.processPreProcessFlow]" doc:name="Set Pre Process Flow Name Variable"  variableName="preProcessFlowName"/>
+		<flow-ref doc:name="pre-process-flow"  name="invoke-pre-process-subflow" />
+        <enricher source="#[payload]" target="#[flowVars['loggerPayload']]" doc:name="Message Enricher">
+            <parse-template location="${process.logger.template.path}" doc:name="Parse Process Logger Template"/>
+        </enricher>
+        <logger message="#[flowVars['loggerPayload']]" level="INFO" doc:name="Logger"/>
+    </sub-flow>  
+    <sub-flow name="warn-logger-sub-flow">
+        <set-variable value="#[flowVars.warnPreProcessFlow == null  ? 'no-pre-process-flow' : flowVars.warnPreProcessFlow]" doc:name="Set Pre Process Flow Name Variable"  variableName="preProcessFlowName"/>
+		<flow-ref doc:name="pre-process-flow"  name="invoke-pre-process-subflow" />
+        <enricher source="#[payload]" target="#[flowVars['loggerPayload']]" doc:name="Message Enricher">
+            <parse-template location="${warn.logger.template.path}" doc:name="Parse Warn Logger Template"/>
+        </enricher>
+        <logger message="#[flowVars['loggerPayload']]" level="INFO" doc:name="Logger"/>
+    </sub-flow>   
+    <sub-flow name="error-logger-sub-flow">
+    <flow-ref name="common-flow-set-timestamp" doc:name="common-flow-set-timestamp"/>
+        <set-variable value="#[flowVars.errorPreProcessFlow == null  ? 'no-pre-process-flow' : flowVars.errorPreProcessFlow]" doc:name="Set Pre Process Flow Name Variable"  variableName="preProcessFlowName"/>
+		<flow-ref doc:name="pre-process-flow"  name="invoke-pre-process-subflow" />
+        <enricher source="#[payload]" target="#[flowVars['loggerPayload']]" doc:name="Message Enricher">
+            <parse-template location="${error.logger.template.path}" doc:name="Parse Error Logger Template"/>
+        </enricher>
+        <logger message="#[flowVars['loggerPayload']]" level="INFO" doc:name="Logger"/>
+    </sub-flow> 
+    
+    
+	
+</mule>
