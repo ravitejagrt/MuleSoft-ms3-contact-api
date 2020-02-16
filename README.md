@@ -8,7 +8,9 @@
 
 * Clone the project from Git using the link: https://github.com/ravitejagrt/ms3-contact-api.git
 
-* Using the sql script in the resources folder create the tables and sample data in the mysql db, port 3306
+* Using the sql script in the resources folder create the db and tables and sample data 
+
+* The sql file can be run using using any client you have. Incase if you don't have one, I use HeidiSql client which is light weight
 
 * If you are using Anypoint studio, import the application using pom file to the anypoint studio and deploy it
 
