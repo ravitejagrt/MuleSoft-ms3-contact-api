@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
     <flow name="api-main">
         <http:listener config-ref="api-httpListenerConfig" path="/api/*" doc:name="HTTP" />
         <logger message="#[payload] -- #[message.payloadAs(java.lang.String)]" level="INFO" doc:name="Logger" />
         <apikit:router config-ref="api-config" doc:name="APIkit Router" />
         <logger message="output payload : #[message.payloadAs(java.lang.String)]" level="INFO" doc:name="Logger" />
-        <exception-strategy ref="api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy" />
+        <exception-strategy ref="api-apiKitGlobalExceptionMapping" doc:name="apiKitExceptionStrategy" />
     </flow>
     <flow name="api-console">
         <http:listener config-ref="api-httpListenerConfig" path="/console/*" doc:name="HTTP" />
@@ -60,25 +64,25 @@
         <flow-ref name="delete-communication-Flow" doc:name="delete-communication-Flow" />
     </flow>
     <flow name="put:/identification/{id}/address/{addressId}:application/json:api-config">
-        <set-payload value="#[NullPayload.getInstance()]" />
+        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
     </flow>
     <flow name="put:/identification/{id}/communication/{communicationId}:application/json:api-config">
-        <set-payload value="#[NullPayload.getInstance()]" />
+        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
     </flow>
     <flow name="put:/identification/{id}:application/json:api-config">
-        <set-payload value="{&#xD;&#xA;&#x9;&quot;empId&quot;: 1,&#xD;&#xA;&#x9;&quot;firstName&quot;: &quot;first_name&quot;,&#xD;&#xA;&#x9;&quot;lastName&quot;: &quot;last_name&quot;,&#xD;&#xA;&#x9;&quot;dob&quot;: &quot;2000-01-02&quot;,&#xD;&#xA;&#x9;&quot;gender&quot;: &quot;M&quot;,&#xD;&#xA;&#x9;&quot;title&quot;: &quot;Manager&quot;&#xD;&#xA;}" />
+        <set-payload value="{&#xD;&#xA;&#x9;&quot;empId&quot;: 1,&#xD;&#xA;&#x9;&quot;firstName&quot;: &quot;first_name&quot;,&#xD;&#xA;&#x9;&quot;lastName&quot;: &quot;last_name&quot;,&#xD;&#xA;&#x9;&quot;dob&quot;: &quot;2000-01-02&quot;,&#xD;&#xA;&#x9;&quot;gender&quot;: &quot;M&quot;,&#xD;&#xA;&#x9;&quot;title&quot;: &quot;Manager&quot;&#xD;&#xA;}" doc:name="Set Payload"/>
     </flow>
     <flow name="post:/identification/{id}/address:application/json:api-config">
-        <set-payload value="{&#xA;&quot;correlationId&quot; : &quot;TEST123&quot;,&#xA;&quot;errorCode&quot; : &quot;MWGXXX&quot;,&#xA;&quot;errorMessage&quot; : &quot;The request cannot be fulfilled due to incorrect request message, please check the request.&quot;,&#xA;&quot;timeStamp&quot; : &quot;2018-04-23T14:25:43&quot;&#xA;}" />
+        <set-payload value="{&#xA;&quot;correlationId&quot; : &quot;TEST123&quot;,&#xA;&quot;errorCode&quot; : &quot;MWGXXX&quot;,&#xA;&quot;errorMessage&quot; : &quot;The request cannot be fulfilled due to incorrect request message, please check the request.&quot;,&#xA;&quot;timeStamp&quot; : &quot;2018-04-23T14:25:43&quot;&#xA;}" doc:name="Set Payload"/>
     </flow>
     <flow name="post:/identification/{id}/communication:application/json:api-config">
-        <set-payload value="{&#xA;&quot;correlationId&quot; : &quot;TEST123&quot;,&#xA;&quot;errorCode&quot; : &quot;MWGXXX&quot;,&#xA;&quot;errorMessage&quot; : &quot;The request cannot be fulfilled due to incorrect request message, please check the request.&quot;,&#xA;&quot;timeStamp&quot; : &quot;2018-04-23T14:25:43&quot;&#xA;}" />
+        <set-payload value="{&#xA;&quot;correlationId&quot; : &quot;TEST123&quot;,&#xA;&quot;errorCode&quot; : &quot;MWGXXX&quot;,&#xA;&quot;errorMessage&quot; : &quot;The request cannot be fulfilled due to incorrect request message, please check the request.&quot;,&#xA;&quot;timeStamp&quot; : &quot;2018-04-23T14:25:43&quot;&#xA;}" doc:name="Set Payload"/>
     </flow>
     <flow name="post:/employee:application/json:api-config">
-        <set-payload value="#[NullPayload.getInstance()]" />
+        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
     </flow>
     <flow name="post:/identification:application/json:api-config">
-        <set-payload value="#[NullPayload.getInstance()]" />
+        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
     </flow>
     <apikit:mapping-exception-strategy name="api-apiKitGlobalExceptionMapping">
         <apikit:mapping statusCode="404">
