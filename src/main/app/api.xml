@@ -6,10 +6,13 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
     <flow name="api-main">
         <http:listener config-ref="api-httpListenerConfig" path="/api/*" doc:name="HTTP" />
-        <logger message="#[payload] -- #[message.payloadAs(java.lang.String)]" level="INFO" doc:name="Logger" />
+       <expression-component doc:name="Set Required Properties"><![CDATA[flowVars.vMessageId=message.rootId;
+flowVars.vCorrelationId=java.util.UUID.randomUUID().toString();
+flowVars.vTimeStamp=server.dateTime.format("yyyy-MM-dd HH:mm:ss.SSS");]]></expression-component>
+        <flow-ref name="entry-logger-sub-flow" doc:name="entry-logger-sub-flow"/>
         <apikit:router config-ref="api-config" doc:name="APIkit Router" />
-        <logger message="output payload : #[message.payloadAs(java.lang.String)]" level="INFO" doc:name="Logger" />
-        <exception-strategy ref="api-apiKitGlobalExceptionMapping" doc:name="apiKitExceptionStrategy" />
+
+        <exception-strategy ref="apiKitExceptionStrategy" doc:name="Reference Exception Strategy" />
     </flow>
     <flow name="api-console">
         <http:listener config-ref="api-httpListenerConfig" path="/console/*" doc:name="HTTP" />
@@ -84,31 +87,5 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
     <flow name="post:/identification:application/json:api-config">
         <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
     </flow>
-    <apikit:mapping-exception-strategy name="api-apiKitGlobalExceptionMapping">
-        <apikit:mapping statusCode="404">
-            <apikit:exception value="org.mule.module.apikit.exception.NotFoundException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
-            <set-payload value="{ &quot;message&quot;: &quot;Resource not found&quot; }" doc:name="Set Payload" />
-        </apikit:mapping>
-        <apikit:mapping statusCode="405">
-            <apikit:exception value="org.mule.module.apikit.exception.MethodNotAllowedException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
-            <set-payload value="{ &quot;message&quot;: &quot;Method not allowed&quot; }" doc:name="Set Payload" />
-        </apikit:mapping>
-        <apikit:mapping statusCode="415">
-            <apikit:exception value="org.mule.module.apikit.exception.UnsupportedMediaTypeException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
-            <set-payload value="{ &quot;message&quot;: &quot;Unsupported media type&quot; }" doc:name="Set Payload" />
-        </apikit:mapping>
-        <apikit:mapping statusCode="406">
-            <apikit:exception value="org.mule.module.apikit.exception.NotAcceptableException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
-            <set-payload value="{ &quot;message&quot;: &quot;Not acceptable&quot; }" doc:name="Set Payload" />
-        </apikit:mapping>
-        <apikit:mapping statusCode="400">
-            <apikit:exception value="org.mule.module.apikit.exception.BadRequestException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
-            <set-payload value="{ &quot;message&quot;: &quot;Bad request&quot; }" doc:name="Set Payload" />
-        </apikit:mapping>
-    </apikit:mapping-exception-strategy>
+   
 </mule>
