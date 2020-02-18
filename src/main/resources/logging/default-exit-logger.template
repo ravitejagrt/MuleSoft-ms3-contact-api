@@ -1,0 +1,1 @@
+#[flowVars.vTimeStamp] EXIT << Application Name: #[app.name], Flow Name: #[mule:context.serviceName],  Message Id: #[flowVars.vMessageId], Correlation-Id: #[flowVars.vCorrelationId] , Log Message: #[flowVars.vLogPayload]
